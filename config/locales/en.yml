@@ -28,6 +28,8 @@
 #       enabled: "ON"
 
 en:
+  not_found: "Resource not found"
+  internal_server_error: "Internal server error"
   api:
     v1:
       points:
