@@ -16,14 +16,19 @@ WORKDIR /rails
 
 # Install base packages
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 && \
+    apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 libpq-dev && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# Set production environment
-ENV RAILS_ENV="production" \
-    BUNDLE_DEPLOYMENT="1" \
+# Make RAILS_ENV, BUNDLE_WITHOUT, and BUNDLE_DEPLOYMENT configurable at build time
+ARG RAILS_ENV=production
+ARG BUNDLE_WITHOUT=development
+ARG BUNDLE_DEPLOYMENT=1
+
+# Set environment variables based on build args
+ENV RAILS_ENV=${RAILS_ENV} \
     BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development"
+    BUNDLE_WITHOUT=${BUNDLE_WITHOUT} \
+    BUNDLE_DEPLOYMENT=${BUNDLE_DEPLOYMENT}
 
 # Throw-away build stage to reduce size of final image
 FROM base AS build
@@ -42,11 +47,10 @@ RUN bundle install && \
 # Copy application code
 COPY . .
 
-# Precompile bootsnap code for faster boot times
-RUN bundle exec bootsnap precompile app/ lib/
-
-
-
+# Precompile bootsnap code for faster boot times (production only)
+RUN if [ "$RAILS_ENV" = "production" ]; then \
+    bundle exec bootsnap precompile app/ lib/; \
+  fi
 
 # Final stage for app image
 FROM base
@@ -55,10 +59,14 @@ FROM base
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --from=build /rails /rails
 
-# Run and own only the runtime files as a non-root user for security
-RUN groupadd --system --gid 1000 rails && \
+# Run and own only the runtime files as a non-root user for security (production only)
+RUN if [ "$RAILS_ENV" = "production" ]; then \
+    groupadd --system --gid 1000 rails && \
     useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp
+    chown -R rails:rails db log storage tmp; \
+fi
+
+# In development, docker-compose should override the user to system user for correct permissions
 USER 1000:1000
 
 # Entrypoint prepares the database.
