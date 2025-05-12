@@ -10,8 +10,72 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 0) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_12_125449) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
+  create_table "clients", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_clients_on_name", unique: true
+  end
+
+  create_table "end_user_accounts", force: :cascade do |t|
+    t.bigint "end_user_id", null: false
+    t.bigint "client_id", null: false
+    t.integer "level", null: false
+    t.integer "current_points", null: false
+    t.integer "monthly_points", null: false
+    t.integer "total_spent_in_cents", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id", "end_user_id"], name: "index_end_user_accounts_on_client_id_and_end_user_id", unique: true
+    t.index ["client_id"], name: "index_end_user_accounts_on_client_id"
+    t.index ["end_user_id"], name: "index_end_user_accounts_on_end_user_id"
+  end
+
+  create_table "end_user_transactions", force: :cascade do |t|
+    t.string "transaction_identifier", null: false
+    t.bigint "end_user_id", null: false
+    t.bigint "client_id", null: false
+    t.boolean "is_foreign", null: false
+    t.integer "amount_in_cents", null: false
+    t.integer "points_earned", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id", "transaction_identifier"], name: "idx_on_client_id_transaction_identifier_5969db325c", unique: true
+    t.index ["client_id"], name: "index_end_user_transactions_on_client_id"
+    t.index ["end_user_id"], name: "index_end_user_transactions_on_end_user_id"
+  end
+
+  create_table "end_users", force: :cascade do |t|
+    t.string "identifier", null: false
+    t.bigint "client_id", null: false
+    t.date "birthday", null: false
+    t.datetime "registered_at", precision: nil, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id", "identifier"], name: "index_end_users_on_client_id_and_identifier", unique: true
+    t.index ["client_id"], name: "index_end_users_on_client_id"
+  end
+
+  create_table "point_rules", force: :cascade do |t|
+    t.bigint "client_id", null: false
+    t.string "name"
+    t.integer "level"
+    t.jsonb "conditions"
+    t.jsonb "actions"
+    t.boolean "active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_point_rules_on_client_id"
+  end
+
+  add_foreign_key "end_user_accounts", "clients"
+  add_foreign_key "end_user_accounts", "end_users"
+  add_foreign_key "end_user_transactions", "clients"
+  add_foreign_key "end_user_transactions", "end_users"
+  add_foreign_key "end_users", "clients"
+  add_foreign_key "point_rules", "clients"
 end
