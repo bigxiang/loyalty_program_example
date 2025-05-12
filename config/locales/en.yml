@@ -28,4 +28,8 @@
 #       enabled: "ON"
 
 en:
-  hello: "Hello world"
+  api:
+    v1:
+      points:
+        earn:
+          success: "Points earned successfully"
