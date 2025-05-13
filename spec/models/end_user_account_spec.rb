@@ -31,10 +31,10 @@ RSpec.describe EndUserAccount, type: :model do
 
     before do
       # This month
-      create(:end_user_transaction, end_user: end_user, points_earned: 10, created_at: Time.zone.now.beginning_of_month + 1.day)
-      create(:end_user_transaction, end_user: end_user, points_earned: 20, created_at: Time.zone.now.end_of_month - 1.day)
+      create(:end_user_transaction, user: end_user, points_earned: 10, created_at: Time.zone.now.beginning_of_month + 1.day)
+      create(:end_user_transaction, user: end_user, points_earned: 20, created_at: Time.zone.now.end_of_month - 1.day)
       # Last month
-      create(:end_user_transaction, end_user: end_user, points_earned: 30, created_at: 1.month.ago.beginning_of_month + 1.day)
+      create(:end_user_transaction, user: end_user, points_earned: 30, created_at: 1.month.ago.beginning_of_month + 1.day)
     end
 
     it 'returns the sum of points_earned for transactions in the current month by default' do

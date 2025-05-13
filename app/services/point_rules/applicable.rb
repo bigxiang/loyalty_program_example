@@ -12,23 +12,23 @@ module PointRules
     def initialize(rule:, transaction:)
       @rule = rule
       @transaction = transaction
-      @end_user = transaction.end_user
+      @user = transaction.user
       @client = transaction.client
     end
 
     def call
       return false unless rule.active
-      return false if rule.level > end_user.level
+      return false if rule.level > user.level
       return false if rule.client != client
 
-      conditions_met?(rule.conditions, end_user, transaction)
+      conditions_met?(rule.conditions, user, transaction)
     end
 
     private
 
-    attr_reader :rule, :transaction, :end_user, :client
+    attr_reader :rule, :transaction, :user, :client
 
-    def conditions_met?(conditions, end_user, transaction)
+    def conditions_met?(conditions, user, transaction)
       conditions.all? do |key, cond|
         case key.to_s
         when "transaction"

@@ -7,7 +7,7 @@ RSpec.describe PointRules::Applicable do
   let(:transaction) do
     create(
       :end_user_transaction,
-      end_user: end_user,
+      user: end_user,
       amount_in_cents: amount_in_cents,
       is_foreign: is_foreign
     )

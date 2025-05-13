@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe EndUserTransaction, type: :model do
   include_context "with current client"
 
-  it { should belong_to(:end_user) }
+  it { should belong_to(:user) }
   it { should belong_to(:client) }
 
   it { should validate_presence_of(:transaction_identifier) }
@@ -24,7 +24,7 @@ RSpec.describe EndUserTransaction, type: :model do
 
   describe '#available_point_rules' do
     let(:end_user) { create(:end_user) }
-    let(:transaction) { create(:end_user_transaction, end_user: end_user) }
+    let(:transaction) { create(:end_user_transaction, user: end_user) }
     let(:user_level) { 1 }
 
     let!(:rule1) { create(:point_rule, :point_earning_level_1) }
