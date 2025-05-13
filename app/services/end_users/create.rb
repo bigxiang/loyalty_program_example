@@ -13,7 +13,7 @@ module EndUsers
     def call
       ActiveRecord::Base.transaction do
         end_user = EndUser.create!(identifier:, birthday:, registered_at:)
-        end_user.create_account!(level: EndUser::MIN_LEVEL, current_points: 0, monthly_points: 0, total_spent_in_cents: 0)
+        end_user.create_account!(level: EndUser::MIN_LEVEL, current_points: 0, total_spent_in_cents: 0)
         end_user
       end
     end

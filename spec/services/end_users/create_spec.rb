@@ -27,7 +27,6 @@ RSpec.describe EndUsers::Create do
 
     expect(account.level).to eq(EndUser::MIN_LEVEL)
     expect(account.current_points).to eq(0)
-    expect(account.monthly_points).to eq(0)
     expect(account.total_spent_in_cents).to eq(0)
   end
 

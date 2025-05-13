@@ -23,7 +23,6 @@ module EndUserTransactions
         account = end_user.account
         account.update!(
           current_points: account.current_points + points_earned,
-          monthly_points: account.monthly_points + points_earned,
           total_spent_in_cents: account.total_spent_in_cents + amount_in_cents
         )
 
