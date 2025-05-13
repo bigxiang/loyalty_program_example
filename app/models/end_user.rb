@@ -1,10 +1,12 @@
 class EndUser < ApplicationRecord
   include OwnedByClient
 
-  has_one :end_user_account
-  has_many :end_user_transactions
+  MIN_LEVEL = 1
 
-  delegate :level, to: :end_user_account
+  has_one :account, class_name: "EndUserAccount"
+  has_many :transactions, class_name: "EndUserTransaction"
+
+  delegate :level, :current_points, :monthly_points, :total_spent_in_cents, to: :account
 
   validates :identifier, presence: true, uniqueness: { scope: :client_id }
   validates :birthday, presence: true
