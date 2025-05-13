@@ -28,6 +28,7 @@
 #       enabled: "ON"
 
 en:
+  unauthorized: "Unauthorized"
   not_found: "Resource not found"
   internal_server_error: "Internal server error"
   api:
@@ -35,3 +36,4 @@ en:
       points:
         earn:
           success: "Points earned successfully"
+          error: "Failed to earn points"
