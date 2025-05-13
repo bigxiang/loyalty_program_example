@@ -1,5 +1,5 @@
 class EndUser < ApplicationRecord
-  belongs_to :client
+  include OwnedByClient
 
   validates :identifier, presence: true, uniqueness: { scope: :client_id }
   validates :birthday, presence: true

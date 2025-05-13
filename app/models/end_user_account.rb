@@ -1,6 +1,7 @@
 class EndUserAccount < ApplicationRecord
+  include OwnedByClient
+
   belongs_to :end_user
-  belongs_to :client
 
   validates :end_user, presence: true, uniqueness: { scope: :client_id }
   validates :level, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }

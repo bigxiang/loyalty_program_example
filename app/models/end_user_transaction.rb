@@ -1,6 +1,7 @@
 class EndUserTransaction < ApplicationRecord
+  include OwnedByClient
+
   belongs_to :end_user
-  belongs_to :client
 
   validates :transaction_identifier, presence: true, uniqueness: { scope: :client_id }
   validates :end_user, presence: true

@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe EndUserTransaction, type: :model do
+  include_context "with current client"
+
   it { should belong_to(:end_user) }
   it { should belong_to(:client) }
 

@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe PointRule, type: :model do
+  include_context "with current client"
+
   describe 'validations' do
     it { should belong_to(:client) }
 

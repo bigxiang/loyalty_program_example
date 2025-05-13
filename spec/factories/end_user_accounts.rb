@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :end_user_account do
     association :end_user
-    association :client
+    client { Current.client! }
     level { 1 }
     current_points { 100 }
     monthly_points { 50 }

@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :point_rule do
-    association :client
+    client { Current.client! }
     sequence(:name) { |n| "Rule #{n}" }
     level { 1 }
     conditions { { min_spend: 100 } }

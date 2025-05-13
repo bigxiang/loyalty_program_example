@@ -1,5 +1,5 @@
 class PointRule < ApplicationRecord
-  belongs_to :client
+  include OwnedByClient
 
   validates :name, presence: true, uniqueness: { scope: :client_id }
   validates :level, presence: true, numericality: { only_integer: true, greater_than: 0 }
