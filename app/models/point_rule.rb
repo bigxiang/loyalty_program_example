@@ -6,4 +6,6 @@ class PointRule < ApplicationRecord
   validates :conditions, presence: true
   validates :actions, presence: true
   validates :active, inclusion: { in: [ true, false ] }
+
+  scope :active, -> { where(active: true) }
 end
