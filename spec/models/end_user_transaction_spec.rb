@@ -32,7 +32,7 @@ RSpec.describe EndUserTransaction, type: :model do
     let!(:rule3) { create(:point_rule, :point_earning_level_1, name: 'Inactive Rule', active: false) }
 
     before do
-      create(:end_user_account, end_user: end_user, level: user_level)
+      create(:end_user_account, user: end_user, level: user_level)
     end
 
     it 'returns only active rules with level <= end_user.level' do

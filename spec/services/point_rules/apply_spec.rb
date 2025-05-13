@@ -12,7 +12,7 @@ RSpec.describe PointRules::Apply do
   let(:user_level) { 2 }
 
   before do
-    create(:end_user_account, end_user: end_user, level: user_level)
+    create(:end_user_account, user: end_user, level: user_level)
   end
 
   subject(:result_point) { described_class.call(transaction: transaction) }

@@ -24,7 +24,7 @@ RSpec.describe Api::V1::Points::Earn do
   describe '#call' do
     context 'when all attributes are valid and user exists' do
       let!(:end_user) { create(:end_user, identifier: user_identifier, birthday: birthday) }
-      let!(:account) { create(:end_user_account, end_user: end_user) }
+      let!(:account) { create(:end_user_account, user: end_user) }
 
       it 'creates a transaction and returns points data' do
         expect { result }.to change { EndUserTransaction.count }.by(1)

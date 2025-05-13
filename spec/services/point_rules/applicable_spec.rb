@@ -21,7 +21,7 @@ RSpec.describe PointRules::Applicable do
   let(:user_level) { 1 }
 
   before do
-    create(:end_user_account, end_user: end_user, level: user_level)
+    create(:end_user_account, user: end_user, level: user_level)
   end
 
   subject(:applicable) { described_class.call(rule: rule, transaction: transaction) }

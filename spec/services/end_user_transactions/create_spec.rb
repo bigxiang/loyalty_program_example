@@ -4,7 +4,7 @@ RSpec.describe EndUserTransactions::Create do
   include_context 'with current client'
 
   let(:end_user) { create(:end_user) }
-  let!(:account) { create(:end_user_account, end_user: end_user, current_points: 10, total_spent_in_cents: 1000) }
+  let!(:account) { create(:end_user_account, user: end_user, current_points: 10, total_spent_in_cents: 1000) }
   let(:transaction_identifier) { 'txn-001' }
   let(:is_foreign) { false }
   let(:amount_in_cents) { 10_000 }

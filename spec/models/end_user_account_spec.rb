@@ -4,15 +4,15 @@ RSpec.describe EndUserAccount, type: :model do
   include_context "with current client"
 
   describe 'validations' do
-    it { should belong_to(:end_user) }
+    it { should belong_to(:user) }
     it { should belong_to(:client) }
 
-    context 'when end_user is not unique' do
+    context 'when user is not unique' do
       before do
         create(:end_user_account)
       end
 
-      it { should validate_uniqueness_of(:end_user).scoped_to(:client_id) }
+      it { should validate_uniqueness_of(:user).scoped_to(:client_id) }
     end
 
     it { should validate_presence_of(:level) }
@@ -27,7 +27,7 @@ RSpec.describe EndUserAccount, type: :model do
 
   describe '#monthly_points' do
     let(:end_user) { create(:end_user) }
-    let(:account) { create(:end_user_account, end_user: end_user) }
+    let(:account) { create(:end_user_account, user: end_user) }
 
     before do
       # This month
