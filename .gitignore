@@ -36,3 +36,7 @@
 
 # RSpec
 spec/examples.txt
+
+# IRB
+.irbrc
+.irb_history
