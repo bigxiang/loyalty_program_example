@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Api::V1::Points', type: :request do
-  include_context "with current client"
+  include_context "with current api key"
 
   describe 'POST /api/v1/points/earn' do
     let(:params) do
@@ -16,7 +16,7 @@ RSpec.describe 'Api::V1::Points', type: :request do
 
     context 'with valid parameters' do
       it 'returns success and the correct response' do
-        post '/api/v1/points/earn', params: params, headers: { "X-Client-Id" => current_client.id }
+        post '/api/v1/points/earn', params: params, headers: { "Authorization" => "Bearer #{current_api_key.token}" }
 
         expect(response).to have_http_status(:ok)
 
@@ -28,7 +28,7 @@ RSpec.describe 'Api::V1::Points', type: :request do
 
     context 'with missing required parameters' do
       it 'returns an error and unprocessable_entity status' do
-        post '/api/v1/points/earn', params: params.except(:user_identifier), headers: { "X-Client-Id" => current_client.id }
+        post '/api/v1/points/earn', params: params.except(:user_identifier), headers: { "Authorization" => "Bearer #{current_api_key.token}" }
 
         expect(response).to have_http_status(:unprocessable_entity)
         json = JSON.parse(response.body)
@@ -48,7 +48,7 @@ RSpec.describe 'Api::V1::Points', type: :request do
       end
 
       it 'returns an error and unprocessable_entity status' do
-        post '/api/v1/points/earn', params: params, headers: { "X-Client-Id" => current_client.id }
+        post '/api/v1/points/earn', params: params, headers: { "Authorization" => "Bearer #{current_api_key.token}" }
 
         expect(response).to have_http_status(:unprocessable_entity)
         json = JSON.parse(response.body)

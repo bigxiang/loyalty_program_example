@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::API
   include AbstractController::Translation
+  include ActionController::HttpAuthentication::Token::ControllerMethods
 
   before_action :authenticate_client!
 
@@ -20,13 +21,15 @@ class ApplicationController < ActionController::API
   private
 
   def authenticate_client!
-    return if current_client
-
-    render json: { error: t("unauthorized") }, status: :unauthorized
+    authenticate_or_request_with_http_token do |token, _options|
+      Current.client = ApiKey.authenticate(token)&.client
+    end
   end
 
-  def current_client
-    # TODO: Add a better way to authenticate the client
-    Current.client ||= Client.find_by(id: request.headers["X-Client-Id"])
+  # Override the default implementation to return a 401 Unauthorized response with JSON.
+  def request_http_token_authentication(realm = "Application", message = nil)
+    render json: { error: message || t("unauthorized") },
+           status: :unauthorized,
+           headers: { "WWW-Authenticate" => %(Token realm="#{realm.gsub(/"/, "")}") }
   end
 end

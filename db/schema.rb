@@ -10,9 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_13_113453) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_14_014414) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "api_keys", force: :cascade do |t|
+    t.bigint "client_id", null: false
+    t.string "token_digest", null: false
+    t.datetime "expires_at", precision: nil
+    t.datetime "revoked_at", precision: nil
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_api_keys_on_client_id"
+    t.index ["token_digest"], name: "index_api_keys_on_token_digest", unique: true
+  end
 
   create_table "clients", force: :cascade do |t|
     t.string "name", null: false
@@ -71,6 +82,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_113453) do
     t.index ["client_id"], name: "index_point_rules_on_client_id"
   end
 
+  add_foreign_key "api_keys", "clients"
   add_foreign_key "end_user_accounts", "clients"
   add_foreign_key "end_user_accounts", "end_users"
   add_foreign_key "end_user_transactions", "clients"

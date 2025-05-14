@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe '500 Internal Server Error', type: :request do
-  include_context "with current client"
+  include_context "with current api key"
 
   # We'll define a temporary route and controller for testing 500 errors
   before(:all) do
@@ -25,7 +25,7 @@ RSpec.describe '500 Internal Server Error', type: :request do
   end
 
   it 'returns 500 internal server error for an unhandled exception' do
-    get '/api/v1/trigger_500', headers: { "X-Client-Id" => current_client.id }
+    get '/api/v1/trigger_500', headers: { "Authorization" => "Bearer #{current_api_key.token}" }
 
     expect(response).to have_http_status(:internal_server_error)
     expect(JSON.parse(response.body)).to include('error' => 'Internal server error')
