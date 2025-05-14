@@ -22,7 +22,7 @@ class ApplicationController < ActionController::API
 
   def authenticate_client!
     authenticate_or_request_with_http_token do |token, _options|
-      Current.client = ApiKey.authenticate(token)&.client
+      Current.client = ApiKey.authenticate(token, request.remote_ip)&.client
     end
   end
 

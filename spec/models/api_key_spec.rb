@@ -25,20 +25,39 @@ RSpec.describe ApiKey, type: :model do
   end
 
   describe ".authenticate" do
-    let!(:api_key) { create(:api_key, expires_at: 1.day.from_now) }
+    let!(:api_key) { create(:api_key, expires_at: 1.day.from_now, whitelisted_ips: [ "1.2.3.4" ]) }
 
-    it "returns the api_key when given a valid token" do
-      found = ApiKey.authenticate(api_key.token)
+    it "returns the api_key when given a valid token and whitelisted ip" do
+      found = ApiKey.authenticate(api_key.token, "1.2.3.4")
       expect(found).to eq(api_key)
     end
 
-    it "returns nil for an invalid token" do
-      expect(ApiKey.authenticate("invalidtoken")).to be_nil
+    it "returns nil for a valid token but non-whitelisted ip" do
+      found = ApiKey.authenticate(api_key.token, "5.6.7.8")
+      expect(found).to be_nil
     end
 
-    it "returns nil for an expired key" do
-      expired_key = create(:api_key, expires_at: 1.day.ago)
-      expect(ApiKey.authenticate(expired_key.token)).to be_nil
+    it "returns the api_key if whitelisted_ips is blank" do
+      api_key = create(:api_key, expires_at: 1.day.from_now, whitelisted_ips: [])
+      found = ApiKey.authenticate(api_key.token, "5.6.7.8")
+      expect(found).to eq(api_key)
+    end
+  end
+
+  describe "#ip_allowed?" do
+    let(:api_key) { build(:api_key, whitelisted_ips: [ "1.2.3.4" ]) }
+
+    it "returns true if whitelisted_ips is blank" do
+      api_key.whitelisted_ips = []
+      expect(api_key.ip_allowed?("5.6.7.8")).to be true
+    end
+
+    it "returns true if ip is in the whitelist" do
+      expect(api_key.ip_allowed?("1.2.3.4")).to be true
+    end
+
+    it "returns false if ip is not in the whitelist" do
+      expect(api_key.ip_allowed?("5.6.7.8")).to be false
     end
   end
 

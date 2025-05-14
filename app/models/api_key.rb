@@ -13,15 +13,22 @@ class ApiKey < ApplicationRecord
 
   before_validation :generate_token, on: :create
 
-  def self.authenticate(token)
+  def self.authenticate(token, ip)
     # We need to use unscoped here because we don't know the client before the authentication.
     # Although we can pass client information in the request headers or use subdomains, but we don't
     # need to do that in this example.
-    unscoped.active.find_by(token_digest: token_digest(token))
+    api_key = unscoped.active.find_by(token_digest: token_digest(token))
+    return nil unless api_key&.ip_allowed?(ip)
+
+    api_key
   end
 
   def self.token_digest(token)
     OpenSSL::HMAC.hexdigest("SHA256", HMAC_SECRET_KEY, token)
+  end
+
+  def ip_allowed?(ip)
+    whitelisted_ips.blank? || whitelisted_ips.include?(ip)
   end
 
   private

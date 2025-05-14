@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_14_014414) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_14_043505) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -21,6 +21,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_14_014414) do
     t.datetime "revoked_at", precision: nil
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "whitelisted_ips", default: [], array: true
     t.index ["client_id"], name: "index_api_keys_on_client_id"
     t.index ["token_digest"], name: "index_api_keys_on_token_digest", unique: true
   end
