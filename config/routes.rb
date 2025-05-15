@@ -3,7 +3,17 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      post "points/earn", to: "points#earn"
+      resources :points, only: [] do
+        collection do
+          post :earn
+        end
+      end
+
+      resources :rewards, only: [] do
+        collection do
+          post :issue
+        end
+      end
     end
   end
 

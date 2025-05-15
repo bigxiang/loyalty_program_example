@@ -37,3 +37,7 @@ en:
         earn:
           success: "Points earned successfully"
           error: "Failed to earn points"
+      rewards:
+        issue:
+          success: "Rewards issued successfully"
+          error: "Failed to issue rewards"

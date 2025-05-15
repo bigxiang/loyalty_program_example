@@ -1,6 +1,79 @@
 # Loyalty Program Example
 
-It's a Rails example for a simple loyalty program, it only implements some backend APIs.
+A simple loyalty program that allows users to earn points and get rewards.
+
+## API Endpoints
+
+### Earn Points
+
+```bash
+curl -X POST http://localhost:3000/api/v1/points/earn \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{"user_identifier": "user123", "birthday": "2000-1-1", "transaction_identifier": "txn123", "is_foreign": true, "amount_in_cents": 12000}'
+```
+
+Response:
+```json
+{
+  "message": "Points earned successfully",
+  "data": {
+    "transaction_identifier": "txn123",
+    "user_identifier": "user123",
+    "points_earned": 120,
+    "current_points": 120,
+    "monthly_points": 120
+  }
+}
+```
+
+### Issue Rewards
+
+```bash
+curl -X POST http://localhost:3000/api/v1/rewards/issue \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{"user_identifier": "user123"}'
+```
+
+Response:
+```json
+{
+  "message": "Rewards issued successfully",
+  "data": {
+    "reward_items": [
+      {
+        "name": "Free Coffee",
+        "quantity": 1
+      }
+    ]
+  }
+}
+```
+
+Error Response (No applicable rewards):
+```json
+{
+  "message": "Error issuing rewards",
+  "errors": ["No rewards applicable"]
+}
+```
+
+Error Response (User not found):
+```json
+{
+  "message": "Error issuing rewards",
+  "errors": ["User not found"]
+}
+```
+
+Error Response (Reward already issued):
+```json
+{
+  "message": "Error issuing rewards",
+  "errors": ["This reward has already been issued to this user"]
+}
+```
 
 ## Development Setup (Docker Compose)
 
@@ -52,38 +125,6 @@ If you have tests set up (e.g., with RSpec):
 
 ```
 RAILS_ENV=test docker compose run --rm web bundle exec rspec
-```
-
-## Using the API
-
-### Example: Earning Points
-
-You can use the `/api/v1/points/earn` endpoint to simulate a user earning points. You will need the API key from the seed output.
-
-#### Example cURL Request
-
-```
-curl -X POST http://localhost:3000/api/v1/points/earn \
-  -H "Authorization: Bearer <API_KEY>" \
-  -H "Content-Type: application/json" \
-  -d '{"user_identifier": "user123", "birthday": "2000-1-1", "transaction_identifier": "txn123", "is_foreign": true, "amount_in_cents": 12000}'
-```
-- Replace `<API_KEY>` with the value printed after seeding.
-- Adjust the parameters as needed.
-
-#### Expected Response
-
-```
-{
-    "message": "Points earned successfully",
-    "data":{ 
-        "transaction_identifier": "txn123",
-        "user_identifier": "user123",
-        "points_earned": 10,
-        "current_points": 10,
-        "monthly_points":10
-    }
-}
 ```
 
 ## Production
