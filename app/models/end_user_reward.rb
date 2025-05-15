@@ -1,5 +1,6 @@
 class EndUserReward < ApplicationRecord
   include OwnedByClient
+  include HasIssuranceIdentifier
 
   belongs_to :user, class_name: "EndUser", foreign_key: :end_user_id
   belongs_to :reward_rule

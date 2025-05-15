@@ -66,7 +66,7 @@ RSpec.describe Api::V1::Rewards::Issue do
         rewards = EndUserReward.where(user: user)
         expect(rewards.count).to eq(2)
         expect(rewards.first.issurance_identifier).to eq(
-          Digest::MD5.hexdigest("#{user.id}:#{rule1.id}:#{Time.current.beginning_of_day.to_i}")
+          EndUserReward.generate_issurance_identifier(user.id, rule1.id)
         )
       end
     end
@@ -97,7 +97,7 @@ RSpec.describe Api::V1::Rewards::Issue do
             user: user,
             reward_rule: rule,
             issued_at: 1.month.ago,
-            issurance_identifier: Digest::MD5.hexdigest("#{user.id}:#{rule.id}:#{1.month.ago.beginning_of_day.to_i}")
+            issurance_identifier: EndUserReward.generate_issurance_identifier(user.id, rule.id, 1.month.ago)
           )
         end
 
@@ -137,7 +137,7 @@ RSpec.describe Api::V1::Rewards::Issue do
             user: user,
             reward_rule: rule,
             issued_at: 1.year.ago,
-            issurance_identifier: Digest::MD5.hexdigest("#{user.id}:#{rule.id}:#{1.year.ago.beginning_of_day.to_i}")
+            issurance_identifier: EndUserReward.generate_issurance_identifier(user.id, rule.id, 1.year.ago)
           )
         end
 
