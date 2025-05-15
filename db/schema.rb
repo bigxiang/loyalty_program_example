@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_14_043505) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_14_131206) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -44,6 +44,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_14_043505) do
     t.index ["client_id", "end_user_id"], name: "index_end_user_accounts_on_client_id_and_end_user_id", unique: true
     t.index ["client_id"], name: "index_end_user_accounts_on_client_id"
     t.index ["end_user_id"], name: "index_end_user_accounts_on_end_user_id"
+  end
+
+  create_table "end_user_rewards", force: :cascade do |t|
+    t.bigint "client_id", null: false
+    t.bigint "end_user_id", null: false
+    t.bigint "reward_rule_id", null: false
+    t.datetime "issued_at", precision: nil, null: false
+    t.string "transaction_identifier", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id", "transaction_identifier"], name: "index_end_user_rewards_on_client_id_and_transaction_identifier", unique: true
+    t.index ["client_id"], name: "index_end_user_rewards_on_client_id"
+    t.index ["end_user_id"], name: "index_end_user_rewards_on_end_user_id"
+    t.index ["reward_rule_id"], name: "index_end_user_rewards_on_reward_rule_id"
   end
 
   create_table "end_user_transactions", force: :cascade do |t|
@@ -83,11 +97,29 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_14_043505) do
     t.index ["client_id"], name: "index_point_rules_on_client_id"
   end
 
+  create_table "reward_rules", force: :cascade do |t|
+    t.bigint "client_id", null: false
+    t.string "name", null: false
+    t.integer "level", null: false
+    t.jsonb "conditions", null: false
+    t.jsonb "actions", null: false
+    t.jsonb "repeat_condition", default: {}, null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id", "name"], name: "index_reward_rules_on_client_id_and_name", unique: true
+    t.index ["client_id"], name: "index_reward_rules_on_client_id"
+  end
+
   add_foreign_key "api_keys", "clients"
   add_foreign_key "end_user_accounts", "clients"
   add_foreign_key "end_user_accounts", "end_users"
+  add_foreign_key "end_user_rewards", "clients"
+  add_foreign_key "end_user_rewards", "end_users"
+  add_foreign_key "end_user_rewards", "reward_rules"
   add_foreign_key "end_user_transactions", "clients"
   add_foreign_key "end_user_transactions", "end_users"
   add_foreign_key "end_users", "clients"
   add_foreign_key "point_rules", "clients"
+  add_foreign_key "reward_rules", "clients"
 end

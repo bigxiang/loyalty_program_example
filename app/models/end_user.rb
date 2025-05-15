@@ -5,6 +5,7 @@ class EndUser < ApplicationRecord
 
   has_one :account, class_name: "EndUserAccount"
   has_many :transactions, class_name: "EndUserTransaction"
+  has_many :end_user_rewards
 
   delegate :level, :current_points, :monthly_points, :total_spent_in_cents, to: :account
 
