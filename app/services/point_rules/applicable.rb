@@ -21,41 +21,12 @@ module PointRules
       return false if rule.level > user.level
       return false if rule.client != client
 
-      conditions_met?(rule.conditions, user, transaction)
+      context_objects = { user:, transaction: }
+      Rules::ConditionsChecker.new(rule:, context_objects:, whitelisted_attributes: WHITELISTED_ATTRIBUTES).all_met?
     end
 
     private
 
     attr_reader :rule, :transaction, :user, :client
-
-    def conditions_met?(conditions, user, transaction)
-      conditions.all? do |key, cond|
-        case key.to_s
-        when "transaction"
-          cond.all? do |attr, ops|
-            ensure_attribute_is_whitelisted(key, attr)
-            all_ops_true?(ops, object: transaction, attr: attr)
-          end
-        else
-          raise NotImplementedError, "Condition key #{key} not implemented"
-        end
-      end
-    end
-
-    def ensure_attribute_is_whitelisted(object, attr)
-      if !WHITELISTED_ATTRIBUTES[object.to_sym].include?(attr.to_sym)
-        raise NotImplementedError, "Attribute #{attr} not implemented"
-      end
-    end
-
-    def all_ops_true?(ops, object:, attr:)
-      ops.all? do |op, value|
-        case op.to_s
-        when "gte" then object.public_send(attr) >= value
-        when "eq" then object.public_send(attr) == value
-        else raise NotImplementedError, "Operator #{op} not implemented"
-        end
-      end
-    end
   end
 end

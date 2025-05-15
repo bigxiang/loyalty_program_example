@@ -22,7 +22,7 @@ module RewardRules
       return false if issued?
 
       context_objects = { user: user, current: Time.current }
-      conditions_met?(rule.conditions, context_objects)
+      Rules::ConditionsChecker.new(rule:, context_objects:, whitelisted_attributes: WHITELISTED_ATTRIBUTES).all_met?
     end
 
     private
@@ -44,85 +44,6 @@ module RewardRules
         last_reward.issued_at >= Time.current.beginning_of_year
       else
         true # No repeat condition, can only be issued once
-      end
-    end
-
-    def conditions_met?(conditions, context_objects)
-      conditions.all? do |context, attrs|
-        obj = context_objects[context.to_sym]
-        next false unless obj
-
-        attrs.all? do |attr, ops|
-          ensure_attribute_is_whitelisted(context, attr)
-          value = obj.public_send(attr)
-          ops.all? do |op, cond_val|
-            cond_val = evaluate_dynamic(cond_val, context_objects)
-            compare(value, op, cond_val)
-          end
-        end
-      end
-    end
-
-    def compare(value, op, cond_val)
-      case op.to_s
-      when "gte" then value >= cond_val
-      when "lte" then value <= cond_val
-      when "gt"  then value > cond_val
-      when "eq"  then value == cond_val
-      else raise NotImplementedError, "Operator #{op} not implemented"
-      end
-    end
-
-    def evaluate_dynamic(val, context_objects)
-      keys = WHITELISTED_ATTRIBUTES.keys.map(&:to_s)
-      dynamic_regexp = /\{(#{keys.join('|')})([.\w() ,\-?!]*)\}/
-      return val unless val.is_a?(String)
-
-      match = val.match(dynamic_regexp)
-      return val unless match
-
-      context_key = match[1]
-      code = match[2].strip
-
-      obj = context_objects[context_key.to_sym]
-      raise NotImplementedError, "Unknown context: #{context_key}" unless obj
-
-      # Handle method calls
-      # e.g. .months_ago(2) or .monthly_points()
-      method_call_regexp = /^\.?([a-zA-Z_][\w]*)\((.*)\)$/
-      if code =~ method_call_regexp
-        method = $1
-        ensure_attribute_is_whitelisted(context_key, method)
-        args = $2.split(",").map(&:strip).map { |a| parse_arg(a) }
-        obj.public_send(method, *args)
-      elsif code.start_with?(".")
-        attribute = code[1..-1]
-        ensure_attribute_is_whitelisted(context_key, attribute)
-        obj.public_send(attribute)
-      else
-        raise NotImplementedError, "Invalid dynamic code: #{code}"
-      end
-    end
-
-    def ensure_attribute_is_whitelisted(context, attr)
-      if !WHITELISTED_ATTRIBUTES[context.to_sym].include?(attr.to_sym)
-        raise NotImplementedError, "Attribute #{attr} not implemented"
-      end
-    end
-
-    def parse_arg(arg)
-      if arg.match?(/\A\d+\z/)
-        arg.to_i
-      elsif arg.match?(/\A\d+\.\d+\z/)
-        arg.to_f
-      elsif arg == "true"
-        true
-      elsif arg == "false"
-        false
-      elsif arg.match?(/\A['"].*['"]\z/)
-        arg[1..-2] # remove surrounding quotes
-      else
-        arg # fallback: return as string
       end
     end
   end

@@ -33,24 +33,6 @@ RSpec.describe RewardRules::Applicable do
       it { expect(subject.call).to eq(false) }
     end
 
-    context 'with dynamic current time condition' do
-      let(:conditions) do
-        { user: { registered_at: { gte: "{current.months_ago(2)}" } } }
-      end
-
-      before do
-        user.update!(registered_at: Time.current - 1.month)
-      end
-
-      it { expect(subject.call).to eq(true) }
-
-      context 'when registered_at is earlier than 2 months ago' do
-        before { user.update!(registered_at: Time.current - 3.months) }
-
-        it { expect(subject.call).to eq(false) }
-      end
-    end
-
     context 'with repeat conditions' do
       context 'when rule is monthly' do
         before { rule.update!(repeat_condition: { type: 'monthly' }) }
@@ -101,51 +83,28 @@ RSpec.describe RewardRules::Applicable do
       end
     end
 
-    context 'with attribute not whitelisted' do
-      let(:conditions) { { user: { not_whitelisted: { gte: 1 } } } }
+    context 'when all conditions under a rule are met' do
+    let(:conditions_checker) { instance_double(Rules::ConditionsChecker, all_met?: true) }
 
-      it 'raises NotImplementedError' do
-        expect { subject.call }.to raise_error(NotImplementedError, /not_whitelisted/)
-      end
+    before do
+      allow(Rules::ConditionsChecker).to receive(:new).and_return(conditions_checker)
     end
 
-    context 'with unknown context' do
-      let(:conditions) { { unknown: { monthly_points: { gte: 100 } } } }
+    it 'returns true' do
+      expect(subject.call).to eq(true)
+    end
+  end
 
-      it { expect(subject.call).to eq(false) }
+  context 'when any condition under a rule is not met' do
+    let(:conditions_checker) { instance_double(Rules::ConditionsChecker, all_met?: false) }
+
+    before do
+      allow(Rules::ConditionsChecker).to receive(:new).and_return(conditions_checker)
     end
 
-    context 'with unknown operator' do
-      let(:conditions) { { user: { monthly_points: { unknown: 100 } } } }
-
-      it 'raises NotImplementedError' do
-        expect { subject.call }.to raise_error(NotImplementedError, /Operator unknown/)
-      end
+    it 'returns false' do
+      expect(subject.call).to eq(false)
     end
-
-    context 'with invalid attribute' do
-      let(:conditions) { { user: { monthly_points: { gte: '{current.invalid!}' } } } }
-
-      it 'raises NotImplementedError' do
-        expect { subject.call }.to raise_error(NotImplementedError, /Attribute invalid! not implemented/)
-      end
-    end
-
-    context 'with float argument parsing' do
-      let(:rule) do
-        create(:reward_rule,
-          active: true,
-          level: 1,
-          conditions: {
-            user: {
-              monthly_points: { gte: 100.0 },
-              total_spent_in_cents: { gte: 200_000 }
-            }
-          }
-        )
-      end
-
-      it { expect(subject.call).to eq(false) }
-    end
+  end
   end
 end

@@ -56,31 +56,27 @@ RSpec.describe PointRules::Applicable do
     end
   end
 
-  context 'when transaction does not meet rule conditions' do
-    let(:amount_in_cents) { 1_000 }
+  context 'when all conditions under a rule are met' do
+    let(:conditions_checker) { instance_double(Rules::ConditionsChecker, all_met?: true) }
 
-    it 'returns false' do
-      expect(applicable).to eq(false)
+    before do
+      allow(Rules::ConditionsChecker).to receive(:new).and_return(conditions_checker)
+    end
+
+    it 'returns true' do
+      expect(applicable).to eq(true)
     end
   end
 
-  context 'when rule has a transaction is_foreign condition' do
-    let(:rule) do
-      create(:point_rule, :point_earning_level_2)
+  context 'when any condition under a rule is not met' do
+    let(:conditions_checker) { instance_double(Rules::ConditionsChecker, all_met?: false) }
+
+    before do
+      allow(Rules::ConditionsChecker).to receive(:new).and_return(conditions_checker)
     end
 
-    let(:user_level) { 2 }
-    let(:is_foreign) { true }
-
-    it 'returns true if transaction matches is_foreign' do
-      expect(applicable).to eq(true)
-    end
-
-    context 'when transaction is not foreign' do
-      let(:is_foreign) { false }
-      it 'returns false' do
-        expect(applicable).to eq(false)
-      end
+    it 'returns false' do
+      expect(applicable).to eq(false)
     end
   end
 end
