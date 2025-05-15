@@ -19,11 +19,11 @@ module Api
           return Result.new(success: false, errors: [ "User not found" ]) if @user.nil?
 
           @reward = RewardRules::Apply.call(user:)
-          return Result.new(success: true, data: { message: "No rewards applicable" }) if @reward.items.empty?
+          return Result.new(success: false, errors: [ "No rewards applicable" ]) if @reward.items.empty?
 
           track_issuance
           reward_items = sum_up_reward_items
-          Result.new(success: true, data: { message: "Rewards issued", reward_items: })
+          Result.new(success: true, data: { reward_items: })
         # This is unlikely to happen because we will read the data when verifying if the rule can be applied,
         # but we're adding this rescue to be safe.
         rescue ActiveRecord::RecordInvalid => e

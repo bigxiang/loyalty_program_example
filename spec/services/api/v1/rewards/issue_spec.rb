@@ -43,8 +43,8 @@ RSpec.describe Api::V1::Rewards::Issue do
       it 'returns success with no rewards message' do
         result = service.call
 
-        expect(result).to be_success
-        expect(result.data[:message]).to eq('No rewards applicable')
+        expect(result).not_to be_success
+        expect(result.errors).to include('No rewards applicable')
       end
     end
 
@@ -57,7 +57,6 @@ RSpec.describe Api::V1::Rewards::Issue do
         result = service.call
 
         expect(result).to be_success
-        expect(result.data[:message]).to eq('Rewards issued')
         expect(result.data[:reward_items]).to contain_exactly(
           { name: 'free_coffee', quantity: 1 + 1 }
         )
@@ -86,8 +85,8 @@ RSpec.describe Api::V1::Rewards::Issue do
         it 'prevents reissuance' do
           result = service.call
 
-          expect(result).to be_success
-          expect(result.data[:message]).to eq('No rewards applicable')
+          expect(result).not_to be_success
+          expect(result.errors).to include('No rewards applicable')
         end
       end
 
@@ -105,7 +104,6 @@ RSpec.describe Api::V1::Rewards::Issue do
           result = service.call
 
           expect(result).to be_success
-          expect(result.data[:message]).to eq('Rewards issued')
           expect(EndUserReward.where(user: user).count).to eq(2)
         end
       end
@@ -126,8 +124,8 @@ RSpec.describe Api::V1::Rewards::Issue do
         it 'prevents reissuance' do
           result = service.call
 
-          expect(result).to be_success
-          expect(result.data[:message]).to include('No rewards applicable')
+          expect(result).not_to be_success
+          expect(result.errors).to include('No rewards applicable')
         end
       end
 
@@ -145,7 +143,6 @@ RSpec.describe Api::V1::Rewards::Issue do
           result = service.call
 
           expect(result).to be_success
-          expect(result.data[:message]).to eq('Rewards issued')
           expect(EndUserReward.where(user: user).count).to eq(2)
         end
       end
