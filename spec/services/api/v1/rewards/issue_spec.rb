@@ -65,7 +65,7 @@ RSpec.describe Api::V1::Rewards::Issue do
         # Verify rewards were created with correct transaction identifiers
         rewards = EndUserReward.where(user: user)
         expect(rewards.count).to eq(2)
-        expect(rewards.first.transaction_identifier).to eq(
+        expect(rewards.first.issurance_identifier).to eq(
           Digest::MD5.hexdigest("#{user.id}:#{rule1.id}:#{Time.current.beginning_of_day.to_i}")
         )
       end
@@ -97,7 +97,7 @@ RSpec.describe Api::V1::Rewards::Issue do
             user: user,
             reward_rule: rule,
             issued_at: 1.month.ago,
-            transaction_identifier: Digest::MD5.hexdigest("#{user.id}:#{rule.id}:#{1.month.ago.beginning_of_day.to_i}")
+            issurance_identifier: Digest::MD5.hexdigest("#{user.id}:#{rule.id}:#{1.month.ago.beginning_of_day.to_i}")
           )
         end
 
@@ -137,7 +137,7 @@ RSpec.describe Api::V1::Rewards::Issue do
             user: user,
             reward_rule: rule,
             issued_at: 1.year.ago,
-            transaction_identifier: Digest::MD5.hexdigest("#{user.id}:#{rule.id}:#{1.year.ago.beginning_of_day.to_i}")
+            issurance_identifier: Digest::MD5.hexdigest("#{user.id}:#{rule.id}:#{1.year.ago.beginning_of_day.to_i}")
           )
         end
 

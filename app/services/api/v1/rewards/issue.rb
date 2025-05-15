@@ -55,12 +55,12 @@ module Api
             # Create all rewards in a single transaction
             reward.items.each do |item|
               # Generate a consistent transaction ID based on user and reward rule
-              transaction_identifier = generate_transaction_id(user, item.rule_id)
+              issurance_identifier = generate_transaction_id(user, item.rule_id)
 
               EndUserReward.create!(
                 user: user,
                 reward_rule_id: item.rule_id,
-                transaction_identifier:,
+                issurance_identifier:,
                 issued_at: Time.current
               )
             end

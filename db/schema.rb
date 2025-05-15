@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_14_131206) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_15_050645) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -51,10 +51,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_14_131206) do
     t.bigint "end_user_id", null: false
     t.bigint "reward_rule_id", null: false
     t.datetime "issued_at", precision: nil, null: false
-    t.string "transaction_identifier", null: false
+    t.string "issurance_identifier", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["client_id", "transaction_identifier"], name: "index_end_user_rewards_on_client_id_and_transaction_identifier", unique: true
+    t.index ["client_id", "issurance_identifier"], name: "index_end_user_rewards_on_client_id_and_issurance_identifier", unique: true
     t.index ["client_id"], name: "index_end_user_rewards_on_client_id"
     t.index ["end_user_id"], name: "index_end_user_rewards_on_end_user_id"
     t.index ["reward_rule_id"], name: "index_end_user_rewards_on_reward_rule_id"

@@ -4,6 +4,6 @@ FactoryBot.define do
     association :user, factory: :end_user
     association :reward_rule
     issued_at { Time.current }
-    transaction_identifier { Digest::MD5.hexdigest("#{user.id}:#{reward_rule.id}:#{Time.current.beginning_of_day.to_i}") }
+    issurance_identifier { Digest::MD5.hexdigest("#{user.id}:#{reward_rule.id}:#{Time.current.beginning_of_day.to_i}") }
   end
 end
