@@ -60,5 +60,34 @@ RSpec.describe Api::V1::Points::Earn do
         expect(result.errors).to include("User identifier can't be blank")
       end
     end
+
+    context 'when transaction_identifier is already used' do
+      before do
+        # First call to create the transaction
+        service.call
+      end
+
+      it 'returns error for duplicate transaction' do
+        result = service.call
+
+        expect(result).not_to be_success
+        expect(result.errors).to contain_exactly('This transaction has already been processed')
+      end
+
+      it 'does not create a new transaction' do
+        expect {
+          service.call
+        }.not_to change(EndUserTransaction, :count)
+      end
+
+      it 'does not update user points' do
+        user = EndUser.find_by(identifier: user_identifier)
+        original_points = user.current_points
+
+        service.call
+
+        expect(user.reload.current_points).to eq(original_points)
+      end
+    end
   end
 end

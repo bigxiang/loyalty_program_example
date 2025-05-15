@@ -38,6 +38,14 @@ module Api
               }
             )
           end
+        rescue ActiveRecord::RecordInvalid => e
+          if e.message =~ /Transaction identifier has already been taken/
+            Result.new(success: false, errors: [ "This transaction has already been processed" ])
+          else
+            raise e
+          end
+        rescue ActiveRecord::RecordNotUnique
+          Result.new(success: false, errors: [ "This transaction has already been processed" ])
         end
 
         private
