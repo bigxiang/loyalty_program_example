@@ -12,4 +12,9 @@ class EndUser < ApplicationRecord
   validates :identifier, presence: true, uniqueness: { scope: :client_id }
   validates :birthday, presence: true
   validates :registered_at, presence: true
+
+  def birthday_in_month?
+    birthday.month == Time.current.month
+  end
+  alias birthday_in_month birthday_in_month?
 end
